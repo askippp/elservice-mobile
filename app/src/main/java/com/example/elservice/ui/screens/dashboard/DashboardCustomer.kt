@@ -42,11 +42,7 @@ fun DashboardCustomer(
 	) {
 		Spacer(modifier = Modifier.height(12.dp))
 
-		HeaderApp(
-			username = "John Doe",
-			photo = null,
-			navController = navController
-		)
+		HeaderApp()
 
 		Spacer(modifier = Modifier.height(12.dp))
 

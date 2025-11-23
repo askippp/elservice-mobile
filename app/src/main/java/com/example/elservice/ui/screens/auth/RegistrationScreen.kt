@@ -2,6 +2,7 @@ package com.example.elservice.ui.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,22 +42,21 @@ import com.example.elservice.ui.components.texts.TitleText
 fun RegitrationScreen(navController: NavHostController) {
 	var nama by remember { mutableStateOf("") }
 	var noTelp by remember { mutableStateOf("") }
-
 	val listProvinsi = RegionProvider.provincesList()
 	var provinsi by remember { mutableStateOf<Province?>(null) }
-
 	val listKota = remember(provinsi) {
 		provinsi?.let { RegionProvider.citiesByProvince(it.id) } ?: emptyList()
 	}
 	var kota by remember { mutableStateOf<City?>(null) }
-
 	var alamat by remember { mutableStateOf("") }
+
 	var email by remember { mutableStateOf("") }
 	var username by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 	var confirmPassword by remember { mutableStateOf("") }
 
 	Column(
+		verticalArrangement = Arrangement.spacedBy(8.dp),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		modifier = Modifier
 			.fillMaxSize()
@@ -73,11 +73,11 @@ fun RegitrationScreen(navController: NavHostController) {
 				.height(300.dp)
 		)
 
-		Spacer(modifier = Modifier.height(16.dp))
+		Spacer(modifier = Modifier.height(8.dp))
 
 		TitleText("Please, Coming In!")
 
-		Spacer(modifier = Modifier.height(16.dp))
+		Spacer(modifier = Modifier.height(8.dp))
 
 		InputField(
 			label = "Full Name",
@@ -87,8 +87,6 @@ fun RegitrationScreen(navController: NavHostController) {
 			onValueChange = { nama = it }
 		)
 
-		Spacer(modifier = Modifier.height(8.dp))
-
 		InputField(
 			label = "Phone Number",
 			placeholder = "Enter your phone number",
@@ -96,8 +94,6 @@ fun RegitrationScreen(navController: NavHostController) {
 			type = InputType.Number,
 			onValueChange = { noTelp }
 		)
-
-		Spacer(modifier = Modifier.height(8.dp))
 
 		SearchableDropDownField(
 			label = "Province",
@@ -110,8 +106,6 @@ fun RegitrationScreen(navController: NavHostController) {
 			}
 		)
 
-		Spacer(modifier = Modifier.height(8.dp))
-
 		SearchableDropDownField(
 			label = "City",
 			selectedItem = kota,
@@ -123,16 +117,12 @@ fun RegitrationScreen(navController: NavHostController) {
 			}
 		)
 
-		Spacer(modifier = Modifier.height(8.dp))
-
 		InputField(
 			label = "Address",
 			placeholder = "Enter your home address",
 			value = alamat,
 			onValueChange = { alamat = it }
 		)
-
-		Spacer(modifier = Modifier.height(8.dp))
 
 		InputField(
 			label = "Email",
@@ -141,16 +131,12 @@ fun RegitrationScreen(navController: NavHostController) {
 			onValueChange = { email = it }
 		)
 
-		Spacer(modifier = Modifier.height(8.dp))
-
 		InputField(
 			label = "Username",
 			placeholder = "Enter your username",
 			value = username,
 			onValueChange = { username = it }
 		)
-
-		Spacer(modifier = Modifier.height(8.dp))
 
 		InputField(
 			label = "Password",
@@ -160,8 +146,6 @@ fun RegitrationScreen(navController: NavHostController) {
 			onValueChange = { password = it }
 		)
 
-		Spacer(modifier = Modifier.height(8.dp))
-
 		InputField(
 			label = "Confirm Password",
 			placeholder = "Enter your password again",
@@ -170,15 +154,11 @@ fun RegitrationScreen(navController: NavHostController) {
 			onValueChange = { confirmPassword = it }
 		)
 
-		Spacer(modifier = Modifier.height(8.dp))
-
 		LinkToAnotherScreen(
 			staticText = "Already have an account?",
 			clickableText = "Login here",
 			onClick = { navController.navigate("login") }
 		)
-
-		Spacer(modifier = Modifier.height(8.dp))
 
 		MainButton(
 			label = "Register",

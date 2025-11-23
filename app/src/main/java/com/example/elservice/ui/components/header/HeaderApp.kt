@@ -27,11 +27,7 @@ import com.example.elservice.R
 import com.example.elservice.ui.components.texts.BodyText
 
 @Composable
-fun HeaderApp(
-	username: String? = null,
-	photo: Int? = null,
-	navController: NavHostController
-) {
+fun HeaderApp() {
 	Column(modifier = Modifier.fillMaxWidth()) {
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
@@ -42,27 +38,6 @@ fun HeaderApp(
 				painter = painterResource(R.drawable.logo),
 				contentDescription = null
 			)
-
-			Row(
-				verticalAlignment = Alignment.CenterVertically,
-				modifier = Modifier.clickable(
-					enabled = true,
-					onClick = { navController.navigate("profile") }
-				)
-			) {
-				BodyText(text = username ?: "Unknown user")
-
-				Image(
-					painter = painterResource(photo ?: R.drawable.ic_launcher_foreground),
-					contentDescription = null,
-					contentScale = ContentScale.Crop,
-					modifier = Modifier
-						.padding(start = 8.dp)
-						.size(40.dp)
-						.clip(CircleShape)
-						.background(MaterialTheme.colorScheme.primary)
-				)
-			}
 		}
 
 		Spacer(modifier = Modifier.height(8.dp))
