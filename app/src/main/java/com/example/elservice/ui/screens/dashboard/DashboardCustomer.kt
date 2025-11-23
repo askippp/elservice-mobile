@@ -1,8 +1,7 @@
-package com.example.elservice.ui.screens.auth
+package com.example.elservice.ui.screens.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +28,7 @@ import com.example.elservice.ui.components.texts.SubtitleText
 import com.example.elservice.ui.components.texts.TitleText
 
 @Composable
-fun Dashboard(
+fun DashboardCustomer(
 	navController: NavHostController,
 	modifier: Modifier = Modifier
 ) {
@@ -39,7 +38,7 @@ fun Dashboard(
 		modifier = Modifier
 			.fillMaxSize()
 			.background(MaterialTheme.colorScheme.background)
-			.padding(16.dp)
+			.padding(horizontal = 16.dp)
 	) {
 		Spacer(modifier = Modifier.height(12.dp))
 

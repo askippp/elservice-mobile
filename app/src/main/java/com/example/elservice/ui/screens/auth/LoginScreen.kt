@@ -84,7 +84,7 @@ fun LoginScreen(navController: NavHostController) {
 
 		MainButton(
 			label = "Login",
-			onClick = { navController.navigate("home")}
+			onClick = { navController.navigate("customer_home")}
 		)
 	}
 }
