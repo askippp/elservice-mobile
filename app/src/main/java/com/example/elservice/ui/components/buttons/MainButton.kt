@@ -9,7 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.elservice.R
 
 @Composable
 fun MainButton(label: String, onClick: () -> Unit) {
@@ -23,7 +28,11 @@ fun MainButton(label: String, onClick: () -> Unit) {
 			),
 			modifier = Modifier.fillMaxWidth()
 		) {
-			Text(label)
+			Text(
+				text = label,
+				fontSize = 16.sp,
+				fontFamily = FontFamily(Font(R.font.poppins_medium))
+			)
 		}
 	}
 }

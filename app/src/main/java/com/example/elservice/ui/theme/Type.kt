@@ -9,32 +9,56 @@ import androidx.compose.ui.unit.sp
 import com.example.elservice.R
 
 val Poppins = FontFamily(
-	Font(R.font.poppins)
+	Font(R.font.poppins_medium, FontWeight.Medium),
 )
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
+val AppTypography = Typography(
 
-    titleLarge = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
+	// --- Body Text Utama ---
+	bodyLarge = TextStyle(
+		fontFamily = Poppins,
+		fontWeight = FontWeight.ExtraBold,
+		fontSize = 16.sp,
+		lineHeight = 24.sp
+	),
 
-    labelSmall = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
+	// --- Judul Besar (Header) ---
+	titleLarge = TextStyle(
+		fontFamily = FontFamily(Font(R.font.poppins_bold)),
+		fontWeight = FontWeight.ExtraBold,
+		fontSize = 22.sp,
+		lineHeight = 28.sp
+	),
+
+	// --- Judul Medium (SubtitleText) ---
+	titleMedium = TextStyle(
+		fontFamily = Poppins,
+		fontWeight = FontWeight.ExtraBold,
+		fontSize = 20.sp,
+		lineHeight = 24.sp
+	),
+
+	// --- Body Medium (opsional untuk teks sekunder) ---
+	bodyMedium = TextStyle(
+		fontFamily = Poppins,
+		fontWeight = FontWeight.ExtraBold,
+		fontSize = 14.sp,
+		lineHeight = 20.sp
+	),
+
+	// --- Caption / Info kecil ---
+	labelMedium = TextStyle(
+		fontFamily = Poppins,
+		fontWeight = FontWeight.ExtraBold,
+		fontSize = 12.sp,
+		lineHeight = 16.sp
+	),
+
+	// --- Label input field dan error kecil ---
+	labelSmall = TextStyle(
+		fontFamily = Poppins,
+		fontWeight = FontWeight.ExtraBold,
+		fontSize = 14.sp,
+		lineHeight = 16.sp
+	)
 )
