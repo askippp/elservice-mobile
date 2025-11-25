@@ -21,6 +21,6 @@ fun formatTime(s: String): String {
 }
 
 fun formatPhone(s: String): String {
-	val clean = s.filter { it.isDigit() }.take(12)
-	return clean.chunked(4).joinToString("-")
+	val clean = s.filter { it.isDigit() }.take(20)
+	return clean
 }

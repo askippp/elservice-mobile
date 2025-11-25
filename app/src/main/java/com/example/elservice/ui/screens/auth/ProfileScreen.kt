@@ -1,10 +1,8 @@
 package com.example.elservice.ui.screens.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,17 +20,21 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import com.example.elservice.ElServiceApp
 import com.example.elservice.R
 import com.example.elservice.common.InputType
 import com.example.elservice.data.local.City
@@ -44,25 +46,50 @@ import com.example.elservice.ui.components.fields.SearchableDropDownField
 import com.example.elservice.ui.components.header.HeaderApp
 import com.example.elservice.ui.components.texts.BodyText
 import com.example.elservice.ui.components.texts.LabelText
-import com.example.elservice.ui.components.texts.SubtitleText
 import com.example.elservice.ui.components.texts.TitleText
+import com.example.elservice.ui.navigation.AppRoute
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(navController: NavHostController) {
-	var username by remember { mutableStateOf<String?>(null) }
-	var email by remember { mutableStateOf<String?>(null) }
-	var password by remember { mutableStateOf<String?>(null) }
-	var photo by remember { mutableStateOf<Int?>(null) }
+	val context = LocalContext.current
+	val appContainer = (context.applicationContext as ElServiceApp).appContainer
+	val getSessionUseCase = appContainer.getSessionUseCase
+	val clearSessionUseCase = appContainer.clearSessionUseCase
+	val scope = rememberCoroutineScope()
 
-	var nama by remember { mutableStateOf<String?>(null) }
-	var noTelp by remember { mutableStateOf<String?>(null) }
-	val listProvinsi = RegionProvider.provincesList()
-	var provinsi by remember { mutableStateOf<Province?>(null) }
-	val listKota = remember(provinsi) {
-		provinsi?.let { RegionProvider.citiesByProvince(it.id) } ?: emptyList()
+	var photoUrl by remember { mutableStateOf<String?>(null) }
+	var username by remember { mutableStateOf("") }
+	var email by remember { mutableStateOf("") }
+
+	var nama by remember { mutableStateOf("") }
+	var noTelp by remember { mutableStateOf("") }
+	var alamat by remember { mutableStateOf("") }
+
+	val provinces = RegionProvider.provincesList()
+	var selectedProvince by remember { mutableStateOf<Province?>(null) }
+
+	val cities = remember(selectedProvince) {
+		selectedProvince?.let { RegionProvider.citiesByProvince(it.id) } ?: emptyList()
 	}
-	var kota by remember { mutableStateOf<City?>(null) }
-	var alamat by remember { mutableStateOf<String?>(null) }
+	var selectedCity by remember { mutableStateOf<City?>(null) }
+
+	LaunchedEffect(Unit) {
+		val session = getSessionUseCase()
+
+		username = session?.user?.username ?: "Unknown User"
+		email = session?.user?.email ?: "Unknown User"
+
+		nama = session?.detail?.nama ?: "Unknown User"
+		noTelp = session?.detail?.telp ?: "Unknown User"
+		alamat = session?.detail?.alamat ?: "Unknown User"
+
+		selectedProvince = provinces.find { it.name == session?.detail?.provinsi }
+
+		selectedCity = selectedProvince
+			?.let { RegionProvider.citiesByProvince(it.id) }
+			?.find { it.name == session?.detail?.kota }
+	}
 
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,38 +100,29 @@ fun ProfileScreen(navController: NavHostController) {
 			.padding(horizontal = 16.dp)
 	) {
 		HeaderApp()
-
 		Spacer(modifier = Modifier.height(16.dp))
 
-		Image(
-			painter = painterResource(photo ?: R.drawable.ic_launcher_foreground),
+		AsyncImage(
+			model = photoUrl ?: R.drawable.ic_launcher_foreground,
 			contentDescription = null,
 			contentScale = ContentScale.Crop,
 			modifier = Modifier
-				.padding(start = 8.dp)
-				.size(100.dp)
+				.size(110.dp)
 				.clip(CircleShape)
 				.background(MaterialTheme.colorScheme.primary)
-				.clickable(
-					enabled = true,
-					onClick = { /*TODO*/ }
-				)
+				.clickable { /* TODO: Update photo */ }
 		)
 
 		Spacer(modifier = Modifier.height(12.dp))
 
-		TitleText("John Doe")
-
-		LabelText("John Doe Muslim")
+		TitleText(username)
+		LabelText(email)
 
 		Spacer(modifier = Modifier.height(30.dp))
 
-		Column(
-			horizontalAlignment = Alignment.Start,
-			modifier = Modifier.fillMaxWidth()
-		) {
-			BodyText("Account Info")
+		Column(modifier = Modifier.fillMaxWidth()) {
 
+			BodyText("Account Info")
 			Spacer(modifier = Modifier.height(4.dp))
 
 			Column(
@@ -112,33 +130,24 @@ fun ProfileScreen(navController: NavHostController) {
 				modifier = Modifier
 					.fillMaxWidth()
 					.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
-					.padding(horizontal = 16.dp, vertical = 8.dp)
-					.padding(bottom = 8.dp)
+					.padding(16.dp)
 			) {
 				InputField(
 					label = "Username",
-					value = username ?: "John Doe Muslim",
-					onValueChange = { username = it },
+					value = username,
+					onValueChange = { username = it }
 				)
 
 				InputField(
 					label = "Email",
-					value = email ?: "john@example.com",
-					onValueChange = { email = it },
-				)
-
-				InputField(
-					label = "Password",
-					type = InputType.Password,
-					value = password ?: "password",
-					onValueChange = { password = it },
+					value = email,
+					onValueChange = { email = it }
 				)
 			}
 
 			Spacer(modifier = Modifier.height(16.dp))
 
 			BodyText("Personal Info")
-
 			Spacer(modifier = Modifier.height(4.dp))
 
 			Column(
@@ -146,31 +155,30 @@ fun ProfileScreen(navController: NavHostController) {
 				modifier = Modifier
 					.fillMaxWidth()
 					.background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
-					.padding(horizontal = 16.dp, vertical = 8.dp)
-					.padding(bottom = 8.dp)
+					.padding(16.dp)
 			) {
 				InputField(
 					label = "Full Name",
-					placeholder = "Enter your full name",
-					value = nama ?: "John Doe",
-					type = InputType.Text,
+					value = nama,
 					onValueChange = { nama = it }
 				)
 
 				InputField(
 					label = "Phone Number",
-					placeholder = "Enter your phone number",
-					value = noTelp.toString(),
-					type = InputType.Number,
-					onValueChange = { noTelp }
+					value = noTelp,
+					onValueChange = { noTelp = it },
+					type = InputType.Number
 				)
 
 				SearchableDropDownField(
 					label = "Province",
-					selectedItem = provinsi,
-					items = listProvinsi,
+					selectedItem = selectedProvince,
+					items = provinces,
 					itemLabel = { it.name },
-					onItemSelected = { provinsi = it },
+					onItemSelected = {
+						selectedProvince = it
+						selectedCity = null
+					},
 					prefixIcon = {
 						Icon(Icons.Default.LocationOn, contentDescription = null)
 					}
@@ -178,10 +186,10 @@ fun ProfileScreen(navController: NavHostController) {
 
 				SearchableDropDownField(
 					label = "City",
-					selectedItem = kota,
-					items = listKota,
+					selectedItem = selectedCity,
+					items = cities,
 					itemLabel = { it.name },
-					onItemSelected = { kota = it },
+					onItemSelected = { selectedCity = it },
 					prefixIcon = {
 						Icon(Icons.Default.LocationCity, contentDescription = null)
 					}
@@ -189,8 +197,7 @@ fun ProfileScreen(navController: NavHostController) {
 
 				InputField(
 					label = "Address",
-					placeholder = "Enter your home address",
-					value = alamat ?: "Bekasi",
+					value = alamat,
 					onValueChange = { alamat = it }
 				)
 			}
@@ -199,7 +206,14 @@ fun ProfileScreen(navController: NavHostController) {
 
 			ErrorButton(
 				label = "Logout",
-				onClick = {  }
+				onClick = {
+					scope.launch {
+						clearSessionUseCase()
+						navController.navigate(AppRoute.Login.route) {
+							popUpTo(0) { inclusive = true }
+						}
+					}
+				}
 			)
 		}
 	}

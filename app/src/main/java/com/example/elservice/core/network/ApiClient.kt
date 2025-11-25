@@ -9,7 +9,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 
-	private const val BASE_URL = "http://192.168.1.10:8000/api/"
+	//10.43.225.148 hotspot
+	//192.168.1.6 rumah nenek 4G
+
+	private const val BASE_URL = "http://192.168.1.6:8000/api/"
 
 	private val client by lazy {
 		OkHttpClient.Builder()

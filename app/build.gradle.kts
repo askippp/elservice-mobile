@@ -80,6 +80,7 @@ dependencies {
 	// ===== Image Loader =====
 	implementation("io.coil-kt:coil-compose:2.7.0")
 	implementation(libs.androidx.material3)
+	implementation(libs.androidx.compose.runtime.saveable)
 
 	// ===== Debug tools =====
 	debugImplementation(libs.androidx.compose.ui.tooling)

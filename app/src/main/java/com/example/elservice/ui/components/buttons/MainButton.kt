@@ -20,7 +20,7 @@ import com.example.elservice.R
 fun MainButton(label: String, onClick: () -> Unit) {
 	Box(modifier = Modifier.fillMaxWidth()) {
 		Button(
-			onClick = onClick,
+			onClick = onClick ,
 			shape = RoundedCornerShape(16.dp),
 			colors = ButtonDefaults.buttonColors(
 				containerColor = MaterialTheme.colorScheme.primary,

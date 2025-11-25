@@ -1,7 +1,9 @@
-package com.example.elservice.data.mapper
+package com.example.elservice.data.mapper.auth
 
-import com.example.elservice.data.remote.dto.response.LoginResponseDto
-import com.example.elservice.domain.model.*
+import com.example.elservice.data.remote.dto.response.auth.LoginResponseDto
+import com.example.elservice.domain.model.user.User
+import com.example.elservice.domain.model.user.UserDetail
+import com.example.elservice.domain.model.user.UserSession
 
 object LoginMapper {
 	fun toUserSession(dto: LoginResponseDto): UserSession {

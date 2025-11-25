@@ -1,4 +1,4 @@
-package com.example.elservice.domain.model
+package com.example.elservice.domain.model.user
 
 data class UserSession(
 	val token: String,

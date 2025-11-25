@@ -1,5 +1,8 @@
 package com.example.elservice.ui.screens.auth
 
+import android.annotation.SuppressLint
+import android.util.Log
+import android.util.Patterns.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -10,9 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,15 +28,58 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.elservice.R
 import com.example.elservice.common.InputType
+import com.example.elservice.core.di.AppContainer
 import com.example.elservice.ui.components.buttons.MainButton
 import com.example.elservice.ui.components.fields.InputField
 import com.example.elservice.ui.components.links.LinkToAnotherScreen
+import com.example.elservice.ui.components.texts.ErrorText
 import com.example.elservice.ui.components.texts.TitleText
+import com.example.elservice.ui.navigation.AppRoute
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
-	var email by remember { mutableStateOf("") }
-	var password by remember { mutableStateOf("") }
+fun LoginScreen(
+	navController: NavHostController,
+	appConteiner: AppContainer
+) {
+	val viewModel = remember { appConteiner.loginViewModelFactory() }
+
+	val loading by viewModel.loading.collectAsState()
+	val serverError by viewModel.error.collectAsState()
+	val session by viewModel.session.collectAsState()
+
+	var email by rememberSaveable { mutableStateOf("") }
+	var password by rememberSaveable { mutableStateOf("") }
+
+	var localError by remember { mutableStateOf<String?>(null) }
+
+	LaunchedEffect(session) {
+		session?.let {
+			val role = it.user.role
+
+			navController.navigate(
+				if (role == "customer") AppRoute.CustomerHome.route
+				else AppRoute.TechnicianHome.route
+			) {
+				popUpTo(AppRoute.Login.route) { inclusive = true }
+			}
+		}
+	}
+
+	fun validate(): Boolean {
+		if (email.isBlank()) {
+			localError = "Email cannot be empty"
+			return false
+		}
+		if (!EMAIL_ADDRESS.matcher(email).matches()) {
+			localError = "Invalid email format"
+			return false
+		}
+		if (password.isBlank()) {
+			localError = "Password cannot be empty"
+			return false
+		}
+		return true
+	}
 
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,8 +107,11 @@ fun LoginScreen(navController: NavHostController) {
 			label = "Email",
 			placeholder = "Enter your email",
 			value = email,
-			type = InputType.Text,
-			onValueChange = { email = it }
+			type = InputType.Email,
+			onValueChange = {
+				email = it
+				localError = null
+			}
 		)
 
 		Spacer(modifier = Modifier.height(8.dp))
@@ -69,7 +121,10 @@ fun LoginScreen(navController: NavHostController) {
 			placeholder = "Enter your password",
 			value = password,
 			type = InputType.Password,
-			onValueChange = { password = it }
+			onValueChange = {
+				password = it
+				localError = null
+			}
 		)
 
 		Spacer(modifier = Modifier.height(8.dp))
@@ -82,9 +137,23 @@ fun LoginScreen(navController: NavHostController) {
 
 		Spacer(modifier = Modifier.height(8.dp))
 
+		localError?.let {
+			ErrorText(it)
+		}
+
+		serverError?.let {
+			ErrorText(it)
+		}
+
 		MainButton(
-			label = "Login",
-			onClick = { navController.navigate("customer_home")}
+			label = if (loading) "Loading..." else "Login",
+			onClick = {
+				if (loading) return@MainButton
+
+				if (!validate()) return@MainButton
+
+				viewModel.login(email, password)
+			}
 		)
 	}
 }

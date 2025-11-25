@@ -12,15 +12,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.elservice.ElServiceApp
 import com.example.elservice.R
+import com.example.elservice.core.di.AppContainer
 import com.example.elservice.ui.components.cards.ServiceCard
 import com.example.elservice.ui.components.carousel.AutoImageCarousel
 import com.example.elservice.ui.components.header.HeaderApp
@@ -32,7 +36,16 @@ fun DashboardCustomer(
 	navController: NavHostController,
 	modifier: Modifier = Modifier
 ) {
-	var username by remember { mutableStateOf<String?>(null) }
+	val context = LocalContext.current
+	val appContainer = (context.applicationContext as ElServiceApp).appContainer
+	val getSessionUseCase = appContainer.getSessionUseCase
+
+	var username by remember { mutableStateOf("Unknown") }
+
+	LaunchedEffect(Unit) {
+		val session = getSessionUseCase()
+		username = session?.user?.username ?: "Unknown"
+	}
 
 	Column(
 		modifier = Modifier
@@ -60,7 +73,7 @@ fun DashboardCustomer(
 			horizontalAlignment = Alignment.Start,
 			modifier = Modifier.fillMaxWidth()
 		) {
-			TitleText("Hello, John Doe")
+			TitleText("Hello, $username")
 			SubtitleText("Here are your services")
 		}
 

@@ -1,12 +1,12 @@
-package com.example.elservice.data.remote.dto.response
+package com.example.elservice.data.remote.dto.response.auth
 
 data class LoginResponseDto(
 	val token: String,
-	val user: UserDto,
+	val user: UserLoginDto,
 	val detail: UserDetailDto
 )
 
-data class UserDto(
+data class UserLoginDto(
 	val id: Int,
 	val username: String,
 	val email: String,
@@ -18,6 +18,7 @@ data class UserDetailDto(
 	val nama: String,
 	val no_telp: String,
 	val alamat: String,
+	val foto: String,
 	val provinsi: String,
 	val kota: String
 )
