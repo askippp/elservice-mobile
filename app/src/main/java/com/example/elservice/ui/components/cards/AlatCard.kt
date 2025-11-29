@@ -37,42 +37,35 @@ fun AlatCard(
 		horizontalAlignment = Alignment.CenterHorizontally,
 		modifier = Modifier
 			.width(80.dp)
-			.clickable(
-				onClick = { onClick() }
-			)
+			.clip(MaterialTheme.shapes.medium)
 			.background(
-				color = MaterialTheme.colorScheme.surfaceContainer.copy(1f),
-				shape = MaterialTheme.shapes.medium
+				if (isSelected)
+					MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+				else
+					MaterialTheme.colorScheme.surfaceContainer
 			)
-			.then(
-				if (isSelected) {
-					Modifier
-						.padding(2.dp)
-						.background(
-							color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-							shape = MaterialTheme.shapes.medium
-						)
-				} else Modifier
-			)
-			.padding(vertical = 8.dp)
+			.clickable { onClick() }
+			.padding(vertical = 8.dp, horizontal = 6.dp)
 	) {
+
 		val painter = if (image.isNullOrEmpty()) {
 			painterResource(R.drawable.ic_launcher_foreground)
 		} else {
 			rememberAsyncImagePainter(image)
 		}
 
-		Box {
+		Box(
+			modifier = Modifier
+				.size(65.dp)
+				.clip(MaterialTheme.shapes.small)
+				.background(MaterialTheme.colorScheme.surfaceVariant),
+			contentAlignment = Alignment.Center
+		) {
 			Image(
 				painter = painter,
 				contentDescription = null,
 				contentScale = ContentScale.Crop,
-				modifier = Modifier
-					.size(65.dp)
-					.background(
-						color = MaterialTheme.colorScheme.onSurface,
-						shape = MaterialTheme.shapes.medium
-					)
+				modifier = Modifier.fillMaxHeight()
 			)
 		}
 

@@ -6,7 +6,7 @@ import com.example.elservice.domain.repository.AlatRepository
 class GetAlatListUseCase(
 	private val repository: AlatRepository
 ) {
-	suspend operator fun invoke(): List<Alat> {
-		return repository.getAlats()
+	suspend operator fun invoke(token: String): List<Alat> {
+		return repository.getAlats(token)
 	}
 }

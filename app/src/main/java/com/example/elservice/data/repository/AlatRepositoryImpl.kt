@@ -9,7 +9,7 @@ class AlatRepositoryImpl(
 	private val api: ApiService,
 ) : AlatRepository {
 
-	override suspend fun getAlats(): List<Alat> {
-		return api.getListAlat().data.map { it.toDomain() }
+	override suspend fun getAlats(token: String): List<Alat> {
+		return api.getListAlat("Bearer $token").data.map { it.toDomain() }
 	}
 }

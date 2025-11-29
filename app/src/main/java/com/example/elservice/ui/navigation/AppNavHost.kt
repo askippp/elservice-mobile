@@ -1,5 +1,7 @@
 package com.example.elservice.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.elservice.core.di.AppContainer
 import com.example.elservice.ui.screens.auth.LoginScreen
 import com.example.elservice.ui.screens.auth.ProfileScreen
@@ -30,8 +34,10 @@ import com.example.elservice.ui.screens.auth.RegistrationScreen
 import com.example.elservice.ui.screens.customer.DetailServiceScreen
 import com.example.elservice.ui.screens.customer.ListServiceScreen
 import com.example.elservice.ui.screens.customer.RequestServiceScreen
+import com.example.elservice.ui.screens.customer.viewmodel.ListServiceViewModel
 import com.example.elservice.ui.screens.dashboard.DashboardLoader
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost(
 	navController: NavHostController,
@@ -44,7 +50,7 @@ fun AppNavHost(
 
 	val registrationViewModel = remember { appContainer.registerViewModelFactory() }
 
-	// Ambil session saat pertama kali masuk
+	// Ambil session saat pertama kali masuk (suspend function)
 	LaunchedEffect(Unit) {
 		val session = appContainer.getSessionUseCase()
 		tokenState.value = session?.token
@@ -52,16 +58,13 @@ fun AppNavHost(
 		isLoading.value = false
 	}
 
+	// Loading sementara
 	if (isLoading.value) {
 		Box(
-			modifier = Modifier
-				.fillMaxSize()
-				.background(Color.White),
+			modifier = Modifier.fillMaxSize().background(Color.White),
 			contentAlignment = Alignment.Center
 		) {
-			CircularProgressIndicator(
-				modifier = Modifier.size(50.dp)
-			)
+			CircularProgressIndicator(modifier = Modifier.size(50.dp))
 		}
 		return
 	}
@@ -77,7 +80,10 @@ fun AppNavHost(
 	val currentRoute = currentBackStackEntry?.destination?.route
 
 	val showNavBar = currentRoute != AppRoute.Login.route &&
-			currentRoute != AppRoute.Register.route
+			currentRoute != AppRoute.Register.route &&
+			currentRoute != AppRoute.Profile.route &&
+			currentRoute != AppRoute.RequestService.route &&
+			currentRoute != AppRoute.DetailService.route
 
 	Scaffold(
 		bottomBar = {
@@ -97,6 +103,7 @@ fun AppNavHost(
 				.padding(innerPadding)
 				.fillMaxSize()
 		) {
+			// AUTH ROUTES
 			composable(AppRoute.Login.route) {
 				LoginScreen(navController, appContainer)
 			}
@@ -105,6 +112,7 @@ fun AppNavHost(
 				RegistrationScreen(navController, registrationViewModel)
 			}
 
+			// DASHBOARD ROUTES
 			composable(AppRoute.CustomerHome.route) {
 				DashboardLoader(role = "customer", navController)
 			}
@@ -118,15 +126,28 @@ fun AppNavHost(
 			}
 
 			composable(AppRoute.ListService.route) {
-				ListServiceScreen(navController)
+				val token = tokenState.value ?: ""
+
+				val listServiceViewModel = remember(token) {
+					appContainer.listServiceViewModelFactory(token)
+				}
+
+				ListServiceScreen(
+					navController = navController,
+					viewModel = listServiceViewModel
+				)
 			}
 
 			composable(AppRoute.RequestService.route) {
-				RequestServiceScreen(navController, appContainer)
+				RequestServiceScreen(navController)
 			}
 
-			composable(AppRoute.DetailService.route) {
-				DetailServiceScreen(navController)
+			composable(
+				route = AppRoute.DetailService.route,
+				arguments = listOf(navArgument("serviceId") { type = NavType.IntType })
+			) { backStackEntry ->
+				val serviceId = backStackEntry.arguments?.getInt("serviceId") ?: 0
+				DetailServiceScreen(navController, serviceId)
 			}
 		}
 	}

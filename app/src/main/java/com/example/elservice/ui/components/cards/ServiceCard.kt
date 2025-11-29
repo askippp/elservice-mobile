@@ -21,9 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.elservice.ui.components.texts.BodyText
 import com.example.elservice.ui.components.texts.CaptionText
 import com.example.elservice.ui.components.texts.LabelText
 import java.sql.Date
@@ -33,13 +31,23 @@ import java.util.Locale
 @Composable
 fun ServiceCard(
 	namaAlat: List<String>? = null,
-	tanggalMasuk: Date? = null,
-	tanggalSelesai: Date? = null,
+	tanggalMasuk: String? = null,
+	tanggalSelesai: String? = null,
 	status: String? = null,
 	totalBiaya: Float? = null,
 	onClick: () -> Unit = {}
 ) {
-	val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+	fun parseDateString(dateStr: String?): String {
+		if (dateStr.isNullOrEmpty()) return "-"
+		return try {
+			val parser = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale("id", "ID"))
+			val date = parser.parse(dateStr)
+			val formatter = java.text.SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+			formatter.format(date)
+		} catch (e: Exception) {
+			"-"
+		}
+	}
 
 	Card(
 		onClick = onClick,
@@ -72,12 +80,12 @@ fun ServiceCard(
 						modifier = Modifier.size(16.dp)
 					)
 
-					CaptionText(tanggalMasuk?.let { dateFormatter.format(it) } ?: "-")
+					CaptionText(parseDateString(tanggalMasuk))
 				}
-				
+
 				StatusChip(status)
 			}
-			
+
 			Spacer(modifier = Modifier.height(8.dp))
 
 			HorizontalDivider(
@@ -101,10 +109,8 @@ fun ServiceCard(
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
 					CaptionText(text = "Completed on")
-
 					Spacer(modifier = Modifier.height(4.dp))
-
-					LabelText(tanggalMasuk?.let { dateFormatter.format(it) } ?: "-")
+					LabelText(parseDateString(tanggalSelesai))
 				}
 
 				Column(
@@ -112,10 +118,8 @@ fun ServiceCard(
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
 					CaptionText(text = "Total Cost")
-
 					Spacer(modifier = Modifier.height(4.dp))
-
-					LabelText("Rp ${totalBiaya?.toInt() ?: "Rp 0"}")
+					LabelText("Rp ${totalBiaya?.toInt() ?: 0}")
 				}
 			}
 		}

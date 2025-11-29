@@ -24,6 +24,7 @@ fun InputField(
 	value: String,
 	type: InputType = InputType.Text,
 	placeholder: String = "",
+	isEnable: Boolean = true,
 	prefixIcon: ImageVector? = null,
 	errorMessage: String? = null,
 	maxLength: Int? = type.maxLength,
@@ -45,8 +46,10 @@ fun InputField(
 		}
 	}
 
+	val isDateOrTime = type == InputType.Date || type == InputType.Time
+
 	val clickableModifier =
-		if (type == InputType.Date || type == InputType.Time)
+		if (isDateOrTime)
 			Modifier.clickable {
 				if (type == InputType.Date) showDatePicker = true
 				if (type == InputType.Time) showTimePicker = true
@@ -56,8 +59,10 @@ fun InputField(
 	OutlinedTextField(
 		value = value,
 		onValueChange = { new ->
-			if (maxLength != null && new.length > maxLength) return@OutlinedTextField
-			onValueChange(handleInput(new))
+			if (!isDateOrTime && isEnable) {
+				if (maxLength != null && new.length > maxLength) return@OutlinedTextField
+				onValueChange(handleInput(new))
+			}
 		},
 		label = { Text(label) },
 		placeholder = { Text(placeholder) },
@@ -88,7 +93,7 @@ fun InputField(
 				else PasswordVisualTransformation()
 			else -> VisualTransformation.None
 		},
-		enabled = !(type == InputType.Date || type == InputType.Time),
+		enabled = isEnable,
 		isError = errorMessage != null,
 		modifier = modifier
 			.fillMaxWidth()

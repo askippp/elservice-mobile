@@ -10,5 +10,7 @@ sealed class AppRoute(val route: String) {
 
 	data object ListService : AppRoute("list_service")
 	data object RequestService : AppRoute("request_service")
-	data object DetailService : AppRoute("detail_service")
+	data object DetailService : AppRoute("detail_service/{serviceId}") {
+		fun createRoute(serviceId: Int) = "detail_service/$serviceId"
+	}
 }
